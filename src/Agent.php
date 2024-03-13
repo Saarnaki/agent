@@ -50,6 +50,7 @@ class Agent extends Mobile_Detect
         'Netscape' => 'Netscape',
         'Mozilla' => 'Mozilla',
         'WeChat'  => 'MicroMessenger',
+        'QGIS' => 'QGIS',
     ];
 
     /**
