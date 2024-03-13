@@ -170,10 +170,10 @@ class Agent extends MobileDetect
     /**
      * Match a detection rule and return the matched key.
      * @param  array $rules
-     * @param  string|null $userAgent
+     *
      * @return string|bool
      */
-    protected function findDetectionRulesAgainstUA(array $rules, $userAgent = null)
+    protected function findDetectionRulesAgainstUA(array $rules)
     {
         // Loop given rules
         foreach ($rules as $key => $regex) {
@@ -182,8 +182,16 @@ class Agent extends MobileDetect
             }
 
             // Check match
-            if ($this->match($regex, $userAgent)) {
+            if (is_string($regex) && $this->match($regex, $this->userAgent)) {
                 return $key ?: reset($this->matchesArray);
+            }
+
+            if (is_array($regex)) {
+                foreach ($regex as $subRegex) {
+                    if (is_array($regex) && $this->match($subRegex, $this->userAgent)) {
+                        return $key ?: reset($this->matchesArray);
+                    }
+                }
             }
         }
 
@@ -192,30 +200,30 @@ class Agent extends MobileDetect
 
     /**
      * Get the browser name.
-     * @param  string|null $userAgent
+     *
      * @return string|bool
      */
-    public function browser($userAgent = null)
+    public function browser()
     {
-        return $this->findDetectionRulesAgainstUA(static::getBrowsers(), $userAgent);
+        return $this->findDetectionRulesAgainstUA(static::getBrowsers());
     }
 
     /**
      * Get the platform name.
-     * @param  string|null $userAgent
+     *
      * @return string|bool
      */
-    public function platform($userAgent = null)
+    public function platform()
     {
-        return $this->findDetectionRulesAgainstUA(static::getPlatforms(), $userAgent);
+        return $this->findDetectionRulesAgainstUA(static::getPlatforms());
     }
 
     /**
      * Get the device name.
-     * @param  string|null $userAgent
+     *
      * @return string|bool
      */
-    public function device($userAgent = null)
+    public function device()
     {
         $rules = static::mergeRules(
             static::getDesktopDevices(),
@@ -223,16 +231,15 @@ class Agent extends MobileDetect
             static::getTabletDevices(),
         );
 
-        return $this->findDetectionRulesAgainstUA($rules, $userAgent);
+        return $this->findDetectionRulesAgainstUA($rules);
     }
 
     /**
      * Check if the device is a desktop computer.
-     * @param  string|null $userAgent deprecated
-     * @param  array $httpHeaders deprecated
+     *
      * @return bool
      */
-    public function isDesktop($userAgent = null, $httpHeaders = null)
+    public function isDesktop()
     {
         // Check specifically for cloudfront headers if the useragent === 'Amazon CloudFront'
         if ($this->getUserAgent() === 'Amazon CloudFront') {
@@ -242,28 +249,27 @@ class Agent extends MobileDetect
             }
         }
 
-        return !$this->isMobile($userAgent, $httpHeaders) && !$this->isTablet($userAgent, $httpHeaders) && !$this->isRobot($userAgent);
+        return !$this->isMobile() && !$this->isTablet() && !$this->isRobot();
     }
 
     /**
      * Check if the device is a mobile phone.
-     * @param  string|null $userAgent deprecated
-     * @param  array $httpHeaders deprecated
+
      * @return bool
      */
-    public function isPhone($userAgent = null, $httpHeaders = null)
+    public function isPhone()
     {
-        return $this->isMobile($userAgent, $httpHeaders) && !$this->isTablet($userAgent, $httpHeaders);
+        return $this->isMobile() && !$this->isTablet();
     }
 
     /**
      * Get the robot name.
-     * @param  string|null $userAgent
+     *
      * @return string|bool
      */
-    public function robot($userAgent = null)
+    public function robot()
     {
-        if ($this->getCrawlerDetect()->isCrawler($userAgent ?: $this->userAgent)) {
+        if ($this->getCrawlerDetect()->isCrawler($this->userAgent)) {
             return ucfirst($this->getCrawlerDetect()->getMatches());
         }
 
@@ -272,29 +278,28 @@ class Agent extends MobileDetect
 
     /**
      * Check if device is a robot.
-     * @param  string|null $userAgent
+     *
      * @return bool
      */
-    public function isRobot($userAgent = null)
+    public function isRobot()
     {
-        return $this->getCrawlerDetect()->isCrawler($userAgent ?: $this->userAgent);
+        return $this->getCrawlerDetect()->isCrawler($this->userAgent);
     }
 
     /**
      * Get the device type
-     * @param null $userAgent
-     * @param null $httpHeaders
+     *
      * @return string
      */
-    public function deviceType($userAgent = null, $httpHeaders = null)
+    public function deviceType()
     {
-        if ($this->isDesktop($userAgent, $httpHeaders)) {
+        if ($this->isDesktop()) {
             return "desktop";
-        } elseif ($this->isPhone($userAgent, $httpHeaders)) {
+        } elseif ($this->isPhone()) {
             return "phone";
-        } elseif ($this->isTablet($userAgent, $httpHeaders)) {
+        } elseif ($this->isTablet()) {
             return "tablet";
-        } elseif ($this->isRobot($userAgent)) {
+        } elseif ($this->isRobot()) {
             return "robot";
         }
 
