@@ -21,7 +21,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Jenssegers\\Agent\\": "src/"
+            "Saarnaki\\Agent\\": "src/"
         }
     },
     "extra": {
@@ -30,10 +30,10 @@
         },
         "laravel": {
             "providers": [
-                "Jenssegers\\Agent\\AgentServiceProvider"
+                "Saarnaki\\Agent\\AgentServiceProvider"
             ],
             "aliases": {
-                "Agent": "Jenssegers\\Agent\\Facades\\Agent"
+                "Agent": "Saarnaki\\Agent\\Facades\\Agent"
             }
         }
     },
