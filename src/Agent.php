@@ -8,9 +8,9 @@ use Detection\MobileDetect;
 
 class Agent extends MobileDetect
 {
-    protected const VERSION_TYPE_STRING = 'text';
-    protected const VERSION_TYPE_FLOAT = 'float';
-    protected const VER = '([\w._\+]+)';
+    public const VERSION_TYPE_STRING = 'text';
+    public const VERSION_TYPE_FLOAT = 'float';
+    public const VER = '([\w._\+]+)';
 
     /**
      * List of desktop devices.
